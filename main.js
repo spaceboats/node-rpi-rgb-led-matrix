@@ -2,8 +2,6 @@
 var bindings = require('bindings')
 var addon = bindings('rpi_rgb_led_matrix')
 
-var _ = require('underscore');
-
 var isStarted = false
 
 var board = module.exports = {
@@ -54,17 +52,26 @@ var board = module.exports = {
 			board.setPixel(x, y, data[offset], data[offset + 1], data[offset + 2]);
 		}
 
-		var xRange = _.range(0, width, 1);
-		var xRangeRev = _.range(width-1, -1, -1);
-		var yRange = _.range(0, height, 1);
-		var yRangeRev = _.range(height-1, -1, -1);
-
 		if (byColumn) {
-			var useRange = fromTopOrLeft ? xRange : xRangeRev;
-			_.map(useRange, function (x) { _.map(yRange, function (y) { colorPixel(x, y); }); });
+			if (fromTopOrLeft) {
+				for (var x = 0; x < width; x++)
+					for (var y = 0; y < height; y++)
+						colorPixel(x, y);
+			} else {
+				for (var x = width - 1; x >= 0; x--)
+					for (var y = 0; y < height; y++)
+						colorPixel(x, y);
+			}
 		} else {
-			var useRange = fromTopOrLeft ? yRange : yRangeRev;
-			_.map(useRange, function (y) { _.map(xRange, function (x) { colorPixel(x, y); }); });
+			if (fromTopOrLeft) {
+				for (var y = 0; y < height; y++)
+					for (var x = 0; x < width; x++)
+						colorPixel(x, y);
+			} else {
+				for (var y = height - 1; y >= 0; y++)
+					for (var x = 0; x < width; x++)
+						colorPixel(x, y);
+			}
 		}
 	},
 
