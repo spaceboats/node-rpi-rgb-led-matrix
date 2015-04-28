@@ -2,6 +2,8 @@
 var bindings = require('bindings')
 var addon = bindings('rpi_rgb_led_matrix')
 
+var _ = require('underscore');
+
 var isStarted = false
 
 var board = module.exports = {
@@ -36,7 +38,10 @@ var board = module.exports = {
 		addon.fill(r, g, b)
 	},
 
-	drawCanvas: function(ctx, width, height) {
+	drawCanvas: function(ctx, width, height, byColumn, fromTopOrLeft) {
+		if (byColumn == undefined) byColumn = true;
+		if (fromTopOrLeft == undefined) fromTopOrLeft = true;
+
 		// this is kind of slow but could be optimized by passing imageData.data directly
 		// and copying it to the screen framebuffer
 		if (!isStarted) throw new Error("'drawCanvas' called before 'start'")
@@ -44,10 +49,22 @@ var board = module.exports = {
 		var imageData = ctx.getImageData(0, 0, width, height)
 		var data = imageData.data
 
-		for (var i = 0; i < data.length; i += 4) {
-			var y = Math.floor(i / 4 / width) 
-			var x = i / 4 - y * width
-			board.setPixel(x, y, data[i], data[i + 1], data[i + 2])
+		var colorPixel = function(x, y) {
+			var offset = 4 * (x + y * width);
+			board.setPixel(x, y, data[offset], data[offset + 1], data[offset + 2]);
+		}
+
+		var xRange = _.range(0, width, 1);
+		var xRangeRev = _.range(width-1, -1, -1);
+		var yRange = _.range(0, height, 1);
+		var yRangeRev = _.range(height-1, -1, -1);
+
+		if (byColumn) {
+			var useRange = fromTopOrLeft ? xRange : xRangeRev;
+			_.map(useRange, function (x) { _.map(yRange, function (y) { colorPixel(x, y); }); });
+		} else {
+			var useRange = fromTopOrLeft ? yRange : yRangeRev;
+			_.map(useRange, function (y) { _.map(xRange, function (x) { colorPixel(x, y); }); });
 		}
 	},
 

@@ -5,10 +5,14 @@
   "main": "main.js",
   "dependencies": {
     "bindings": "^1.2.1",
-    "nan": "^1.6.2"
+    "nan": "^1.6.2",
+    "underscore": "^1.8.3"
   },
   "devDependencies": {},
   "author": "Henner Zeller, Rob Middleton",
+  "contributors": [
+    "Alex Gustafson <alexdgus@gmail.com>"
+  ],
   "license": "GPLv2",
   "repository": {
     "type": "git",
