@@ -56,3 +56,5 @@ var board = module.exports = {
 		addon.clear()
 	}
 }
+
+// vim: nosta noet
